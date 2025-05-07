@@ -1,172 +1,490 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>贪吃蛇游戏</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地猫币系统</title>
     <style>
-        canvas {
-            border: 2px solid #333;
-            background-color: #222;
-        }
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #444;
-            color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
         }
-        #score {
-            font-size: 24px;
-            margin: 10px;
+        h1 {
+            color: #ff6b00;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* 成员版样式 */
+        .member-info {
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #fff8e1;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .member-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff6b00;
+        }
+        .member-points {
+            font-size: 1.8em;
+            margin: 10px 0;
+        }
+        .exchange-section {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            background-color: #ff6b00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #e05d00;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        /* 管理版样式 */
+        .admin-login {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .admin-controls {
+            margin-bottom: 20px;
+        }
+        .member-list {
+            margin-bottom: 20px;
+        }
+        .member-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        .member-row:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        .member-controls {
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 60px;
+            text-align: center;
+        }
+        /* 通用样式 */
+        .log {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            background-color: white;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #eee;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 0.8em;
+        }
+        .login-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div id="score">得分: 0</div>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="container">
+        <h1>地猫币系统</h1>
+        
+        <div class="tab-container">
+            <div class="tab active" data-tab="member">成员版</div>
+            <div class="tab" data-tab="admin">管理版</div>
+        </div>
+        
+        <!-- 成员版内容 -->
+        <div id="member-tab" class="tab-content active">
+            <div class="login-section" id="login-section">
+                <h2>请选择您的身份</h2>
+                <select id="member-select">
+                    <option value="">-- 请选择 --</option>
+                </select>
+                <button id="login-btn">登录</button>
+            </div>
+            
+            <div id="member-area" class="hidden">
+                <div class="member-info">
+                    <div class="member-name" id="current-member-name"></div>
+                    <div class="member-points">
+                        <span id="current-member-points"></span> 地猫币
+                    </div>
+                </div>
+                
+                <div class="exchange-section">
+                    <h2>糖果兑换</h2>
+                    <p>10个地猫币可兑换1个糖果</p>
+                    <button id="exchange-btn">兑换1个糖果</button>
+                    <p id="exchange-message" style="color: #ff6b00; font-weight: bold;"></p>
+                </div>
+                
+                <div class="log">
+                    <h2>操作记录</h2>
+                    <div id="member-log-entries"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 管理版内容 -->
+        <div id="admin-tab" class="tab-content">
+            <div class="admin-login" id="admin-login-section">
+                <h2>管理员登录</h2>
+                <input type="password" id="admin-password" placeholder="输入管理员密码">
+                <button id="admin-login-btn">登录</button>
+                <p id="admin-login-message" style="color: red;"></p>
+            </div>
+            
+            <div id="admin-area" class="hidden">
+                <div class="admin-controls">
+                    <h2>成员管理</h2>
+                    <div class="member-list" id="admin-member-list"></div>
+                </div>
+                
+                <div class="log">
+                    <h2>系统日志</h2>
+                    <div id="admin-log-entries"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
+        // 系统数据
+        const ADMIN_PASSWORD = "7891"; // 管理密码
+        let systemData = {
+            members: [
+                { id: 1, name: “李艾骏”, points: 50 },
+                { id: 2, name: “马诗妹”, points: 30 },
+                { id: 3, name: “孔新睿”, points: 25 },
+                { id: 4, name: “杨道诚”, points: 40 },
+                { id: 5, name: “杨凯丞”, points: 15 }
+            ],
+            logs: []
+        };
 
-        const gridSize = 20;
-        const tileCount = canvas.width / gridSize;
+        // 当前登录的成员ID
+        let currentMemberId = null;
+        let isAdminLoggedIn = false;
+
+        // DOM元素
+        // 成员版
+        const memberSelect = document.getElementById('member-select');
+        const loginBtn = document.getElementById('login-btn');
+        const memberArea = document.getElementById('member-area');
+        const currentMemberName = document.getElementById('current-member-name');
+        const currentMemberPoints = document.getElementById('current-member-points');
+        const exchangeBtn = document.getElementById('exchange-btn');
+        const exchangeMessage = document.getElementById('exchange-message');
+        const memberLogEntries = document.getElementById('member-log-entries');
         
-        let snake = [
-            { x: 10, y: 10 }
-        ];
-        let food = { x: 15, y: 15 };
-        let dx = 0;
-        let dy = 0;
-        let score = 0;
-        let gameSpeed = 100;
-        let gameLoop;
-
-        document.addEventListener('keydown', changeDirection);
-
-        function startGame() {
-            gameLoop = setInterval(update, gameSpeed);
-        }
-
-        function update() {
-            // 移动蛇
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-            
-            // 检查碰撞边界
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                gameOver();
-                return;
-            }
-
-            // 检查自我碰撞
-            for (let i = 0; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    gameOver();
-                    return;
-                }
-            }
-
-            snake.unshift(head);
-
-            // 检查是否吃到食物
-            if (head.x === food.x && head.y === food.y) {
-                score += 10;
-                scoreElement.textContent = `得分: ${score}`;
-                generateFood();
-                gameSpeed = Math.max(50, gameSpeed - 2);
-                clearInterval(gameLoop);
-                gameLoop = setInterval(update, gameSpeed);
+        // 管理版
+        const adminPasswordInput = document.getElementById('admin-password');
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+        const adminLoginMessage = document.getElementById('admin-login-message');
+        const adminArea = document.getElementById('admin-area');
+        const adminMemberList = document.getElementById('admin-member-list');
+        const adminLogEntries = document.getElementById('admin-log-entries');
+        
+        // 标签页控制
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // 初始化 - 从localStorage加载数据
+        function init() {
+            const savedData = localStorage.getItem('dimaobiSystem');
+            if (savedData) {
+                systemData = JSON.parse(savedData);
             } else {
-                snake.pop();
+                saveData();
             }
-
-            draw();
+            
+            initMemberSelect();
+            renderAdminMemberList();
+            renderLogs();
         }
 
-        function draw() {
-            // 清空画布
-            ctx.fillStyle = '#222';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // 绘制蛇
-            snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? '#4CAF50' : '#2E7D32';
-                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-            });
-
-            // 绘制食物
-            ctx.fillStyle = '#FF5252';
-            ctx.beginPath();
-            ctx.arc(
-                food.x * gridSize + gridSize/2,
-                food.y * gridSize + gridSize/2,
-                gridSize/2 - 2,
-                0,
-                Math.PI * 2
-            );
-            ctx.fill();
+        // 保存数据到localStorage
+        function saveData() {
+            localStorage.setItem('dimaobiSystem', JSON.stringify(systemData));
         }
 
-        function changeDirection(event) {
-            const LEFT_KEY = 37;
-            const RIGHT_KEY = 39;
-            const UP_KEY = 38;
-            const DOWN_KEY = 40;
-
-            const keyPressed = event.keyCode;
-            const goingUp = dy === -1;
-            const goingDown = dy === 1;
-            const goingRight = dx === 1;
-            const goingLeft = dx === -1;
-
-            if (keyPressed === LEFT_KEY && !goingRight) {
-                dx = -1;
-                dy = 0;
-            }
-            if (keyPressed === UP_KEY && !goingDown) {
-                dx = 0;
-                dy = -1;
-            }
-            if (keyPressed === RIGHT_KEY && !goingLeft) {
-                dx = 1;
-                dy = 0;
-            }
-            if (keyPressed === DOWN_KEY && !goingUp) {
-                dx = 0;
-                dy = 1;
-            }
-        }
-
-        function generateFood() {
-            food = {
-                x: Math.floor(Math.random() * tileCount),
-                y: Math.floor(Math.random() * tileCount)
+        // 添加日志
+        function addLog(message, isAdminLog = false) {
+            const now = new Date();
+            const timestamp = now.toLocaleString();
+            const logEntry = {
+                timestamp,
+                message,
+                isAdminLog
             };
-            // 确保食物不会生成在蛇身上
-            snake.forEach(segment => {
-                if (segment.x === food.x && segment.y === food.y) {
-                    generateFood();
+            
+            systemData.logs.unshift(logEntry); // 添加到开头
+            if (systemData.logs.length > 100) {
+                systemData.logs.pop(); // 限制日志数量
+            }
+            
+            saveData();
+            renderLogs();
+        }
+
+        // 渲染日志
+        function renderLogs() {
+            // 成员日志 - 只显示当前成员的日志
+            memberLogEntries.innerHTML = '';
+            if (currentMemberId) {
+                const member = systemData.members.find(m => m.id === currentMemberId);
+                if (member) {
+                    const memberLogs = systemData.logs.filter(log => 
+                        log.message.includes(member.name) || !log.isAdminLog
+                    );
+                    
+                    memberLogs.slice(0, 20).forEach(log => {
+                        const logEntry = document.createElement('div');
+                        logEntry.className = 'log-entry';
+                        logEntry.innerHTML = `
+                            <div class="timestamp">[${log.timestamp}]</div>
+                            <div>${log.message}</div>
+                        `;
+                        memberLogEntries.appendChild(logEntry);
+                    });
+                }
+            }
+            
+            // 管理日志 - 显示所有日志
+            adminLogEntries.innerHTML = '';
+            systemData.logs.slice(0, 50).forEach(log => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `
+                    <div class="timestamp">[${log.timestamp}]</div>
+                    <div>${log.message}</div>
+                `;
+                adminLogEntries.appendChild(logEntry);
+            });
+        }
+
+        // 初始化成员选择下拉框
+        function initMemberSelect() {
+            memberSelect.innerHTML = '<option value="">-- 请选择 --</option>';
+            systemData.members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name;
+                memberSelect.appendChild(option);
+            });
+        }
+
+        // 登录功能
+        loginBtn.addEventListener('click', () => {
+            const selectedId = parseInt(memberSelect.value);
+            if (selectedId) {
+                currentMemberId = selectedId;
+                const member = systemData.members.find(m => m.id === currentMemberId);
+                
+                if (member) {
+                    // 显示成员区域
+                    document.getElementById('login-section').classList.add('hidden');
+                    memberArea.classList.remove('hidden');
+                    
+                    // 更新成员信息
+                    currentMemberName.textContent = member.name;
+                    currentMemberPoints.textContent = member.points;
+                    
+                    // 添加登录日志
+                    addLog(`${member.name} 登录成员系统`, false);
+                }
+            } else {
+                alert('请选择您的身份');
+            }
+        });
+
+        // 兑换糖果
+        exchangeBtn.addEventListener('click', () => {
+            if (!currentMemberId) return;
+            
+            const member = systemData.members.find(m => m.id === currentMemberId);
+            if (member) {
+                if (member.points >= 10) {
+                    member.points -= 10;
+                    currentMemberPoints.textContent = member.points;
+                    exchangeMessage.textContent = '兑换成功！获得1个糖果';
+                    
+                    addLog(`${member.name} 兑换了1个糖果，消耗10地猫币 (剩余: ${member.points})`, false);
+                    saveData();
+                    
+                    // 3秒后清除消息
+                    setTimeout(() => {
+                        exchangeMessage.textContent = '';
+                    }, 3000);
+                } else {
+                    exchangeMessage.textContent = '地猫币不足，无法兑换糖果';
+                    
+                    // 3秒后清除消息
+                    setTimeout(() => {
+                        exchangeMessage.textContent = '';
+                    }, 3000);
+                }
+            }
+        });
+
+        // 管理员登录
+        adminLoginBtn.addEventListener('click', () => {
+            const password = adminPasswordInput.value;
+            if (password === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-login-section').classList.add('hidden');
+                adminArea.classList.remove('hidden');
+                adminPasswordInput.value = '';
+                adminLoginMessage.textContent = '';
+                
+                addLog("管理员登录系统", true);
+            } else {
+                adminLoginMessage.textContent = '密码错误，请重试';
+            }
+        });
+
+        // 渲染管理员成员列表
+        function renderAdminMemberList() {
+            adminMemberList.innerHTML = '';
+            systemData.members.forEach(member => {
+                const memberRow = document.createElement('div');
+                memberRow.className = 'member-row';
+                memberRow.innerHTML = `
+                    <div>
+                        <span style="font-weight: bold;">${member.name}</span>
+                        <span>ID: ${member.id}</span>
+                    </div>
+                    <div>
+                        <span style="color: #ff6b00; font-weight: bold;">${member.points} 地猫币</span>
+                    </div>
+                    <div class="member-controls">
+                        <input type="number" id="points-input-${member.id}" value="0" min="-100" max="100">
+                        <button onclick="adminAddPoints(${member.id})">调整</button>
+                    </div>
+                `;
+                adminMemberList.appendChild(memberRow);
+            });
+        }
+
+        // 管理员调整地猫币
+        window.adminAddPoints = function(memberId) {
+            if (!isAdminLoggedIn) return;
+            
+            const input = document.getElementById(`points-input-${memberId}`);
+            const amount = parseInt(input.value);
+            if (isNaN(amount)) return;
+            
+            const member = systemData.members.find(m => m.id === memberId);
+            if (member) {
+                member.points += amount;
+                if (member.points < 0) member.points = 0;
+                
+                addLog(`管理员调整 ${member.name} 的地猫币: ${amount > 0 ? '+' : ''}${amount} (当前: ${member.points})`, true);
+                saveData();
+                
+                // 如果调整的是当前登录的成员，更新显示
+                if (currentMemberId === memberId) {
+                    currentMemberPoints.textContent = member.points;
+                }
+                
+                input.value = '0';
+                renderAdminMemberList();
+            }
+        };
+
+        // 标签页切换
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有active类
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // 添加active类到当前标签
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabId).classList.add('active');
+                
+                // 切换到管理版时检查是否已登录
+                if (tab.getAttribute('data-tab') === 'admin' && !isAdminLoggedIn) {
+                    document.getElementById('admin-login-section').classList.remove('hidden');
+                    adminArea.classList.add('hidden');
                 }
             });
-        }
+        });
 
-        function gameOver() {
-            clearInterval(gameLoop);
-            alert(`游戏结束！得分: ${score}`);
-            // 重置游戏
-            snake = [{ x: 10, y: 10 }];
-            dx = 0;
-            dy = 0;
-            score = 0;
-            gameSpeed = 100;
-            scoreElement.textContent = `得分: ${score}`;
-            generateFood();
-        }
-
-        // 初始化游戏
-        generateFood();
-        startGame();
+        // 初始化系统
+        init();
     </script>
 </body>
 </html>
