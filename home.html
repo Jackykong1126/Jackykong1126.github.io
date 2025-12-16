@@ -2,301 +2,281 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>活着吗</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b0f17">
   <style>
     :root { 
       font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-      --safe-area-inset-top: env(safe-area-inset-top, 0px);
-      --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
       -webkit-tap-highlight-color: transparent;
     }
     body { 
-      margin: 0; 
       background: #0b0f17; 
       color: #e7eefc;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      padding: var(--safe-top) 0 var(--safe-bottom);
+      overflow-x: hidden;
     }
     .container {
+      flex: 1;
       width: 100%;
-      max-width: 800px;
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 0;
     }
-    .card { 
-      background: rgba(255,255,255,.06); 
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 20px; 
-      padding: 30px 25px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.3); 
+    
+    /* 顶部区域 - 手机端优化 */
+    .header {
+      text-align: center;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.3);
       backdrop-filter: blur(10px);
     }
     h1 { 
-      margin: 0 0 15px; 
-      font-size: 28px; 
-      letter-spacing: .5px; 
-      text-align: center;
+      font-size: 24px; 
       color: #7aa7ff;
+      margin-bottom: 6px;
+      font-weight: 700;
     }
     .sub { 
       opacity: .85; 
-      margin: 0 0 25px; 
-      font-size: 15px; 
-      line-height: 1.6;
-      text-align: center;
+      font-size: 13px; 
+      line-height: 1.4;
       max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 auto;
     }
-    .grid { 
+    
+    /* 统计卡片 - 手机端压缩 */
+    .stats-grid { 
       display: grid; 
       grid-template-columns: repeat(3, 1fr); 
-      gap: 15px; 
-      margin-bottom: 25px;
+      gap: 10px; 
+      padding: 16px 20px 8px;
     }
-    .stat { 
-      padding: 20px 15px; 
-      border-radius: 16px; 
-      background: rgba(0,0,0,.15);
-      border: 1px solid rgba(255,255,255,.12); 
-      text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .stat:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,.2);
-    }
-    .label { 
-      font-size: 13px; 
-      opacity: .8; 
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-    .value { 
-      font-size: 32px; 
-      font-weight: 700; 
-      line-height: 1.2;
-      background: linear-gradient(135deg, #7aa7ff, #a3c2ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .main-action {
-      margin: 30px 0;
-    }
-    button { 
-      cursor: pointer; 
-      border: 0; 
-      border-radius: 16px; 
-      padding: 18px 24px; 
-      font-weight: 700; 
-      font-size: 17px;
-      transition: all 0.2s ease; 
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-    button:hover:not(:disabled) {
-      filter: brightness(1.15);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(122, 167, 255, 0.3);
-    }
-    button:active:not(:disabled) {
-      transform: translateY(0);
-      filter: brightness(0.95);
-    }
-    .primary { 
-      background: linear-gradient(135deg, #7aa7ff, #5d8eff); 
-      color: #0b0f17; 
-      border: 2px solid rgba(255,255,255,0.1);
-    }
-    .primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none !important;
-      box-shadow: none !important;
-      filter: none !important;
-    }
-    .ghost { 
-      background: rgba(255,255,255,.08); 
-      color: #e7eefc; 
-      border: 1px solid rgba(255,255,255,.16); 
-    }
-    .ghost:hover {
-      background: rgba(255,255,255,.12);
-      border-color: rgba(255,255,255,.25);
-    }
-    .danger { 
-      background: rgba(255,120,120,.15); 
-      color: #ffb6b6; 
-      border: 1px solid rgba(255,120,120,.3); 
-    }
-    .danger:hover {
-      background: rgba(255,120,120,.2);
-      border-color: rgba(255,120,120,.4);
-    }
-    input[type="date"] { 
-      background: rgba(255,255,255,.08); 
-      color: #e7eefc;
-      border: 1px solid rgba(255,255,255,.18); 
+    .stat-card { 
+      padding: 12px 8px; 
       border-radius: 12px; 
-      padding: 14px 16px; 
-      font-size: 15px;
-      width: 100%;
-      transition: all 0.2s;
-    }
-    input[type="date"]:hover,
-    input[type="date"]:focus {
-      background: rgba(255,255,255,.12);
-      border-color: rgba(255,255,255,.25);
-      outline: none;
-    }
-    .control-group {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
-      margin: 20px 0;
-    }
-    .button-group {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 25px 0;
-    }
-    .log { 
-      margin: 25px 0; 
-      font-size: 14px; 
-      opacity: .9; 
+      background: rgba(0,0,0,.2);
+      border: 1px solid rgba(255,255,255,.08); 
       text-align: center;
-      padding: 16px;
-      background: rgba(0,0,0,.12);
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.08);
-    }
-    .pill { 
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px; 
-      padding: 14px 20px; 
-      border-radius: 999px;
-      background: rgba(255,255,255,.08); 
-      border: 1px solid rgba(255,255,255,.14); 
-      font-size: 15px;
-      font-weight: 500;
-      margin: 0 auto;
-      transition: all 0.2s;
-    }
-    .pill:hover {
-      background: rgba(255,255,255,.12);
-      border-color: rgba(255,255,255,.2);
-    }
-    .calendar-container {
-      margin: 30px 0 20px 0;
-    }
-    .calendar-title {
-      opacity: .8; 
-      font-size: 14px; 
-      line-height: 1.6; 
-      text-align: center;
-      margin-bottom: 15px;
-      font-weight: 500;
-    }
-    .calendar { 
-      display: grid; 
-      grid-template-columns: repeat(7, 1fr); 
-      gap: 8px; 
-    }
-    .day { 
-      text-align: center; 
-      padding: 14px 0; 
-      border-radius: 12px; 
-      font-size: 13px;
-      border: 1px solid rgba(255,255,255,.1); 
-      background: rgba(0,0,0,.18); 
-      aspect-ratio: 1;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      transition: all 0.2s;
+      min-height: 70px;
+    }
+    .stat-label { 
+      font-size: 11px; 
+      opacity: .8; 
+      margin-bottom: 6px;
       font-weight: 500;
-      cursor: default;
+      white-space: nowrap;
     }
-    .day:hover {
-      background: rgba(255,255,255,.05);
-    }
-    .day.checked { 
-      background: linear-gradient(135deg, rgba(122,167,255,.25), rgba(93,142,255,.35)); 
-      border-color: rgba(122,167,255,.5); 
-    }
-    .day.today { 
-      outline: 3px solid rgba(122,167,255,.6); 
-      outline-offset: -3px;
-      position: relative;
-    }
-    .day.today::after {
-      content: '今日';
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      font-size: 9px;
+    .stat-value { 
+      font-size: 22px; 
+      font-weight: 700; 
+      line-height: 1;
       color: #7aa7ff;
     }
     
-    /* 长按进度条 - 双端兼容 */
-    .long-press-progress {
+    /* 主打卡按钮区域 */
+    .main-action {
+      padding: 16px 20px;
+      background: rgba(0,0,0,0.15);
+      margin: 8px 0;
+    }
+    .action-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .status-pill {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    /* 长按按钮优化 */
+    .long-press-btn {
       position: relative;
       overflow: hidden;
-      min-height: 70px;
+      background: linear-gradient(135deg, #7aa7ff, #5d8eff);
+      color: #0b0f17;
+      border: none;
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 17px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .long-press-fill {
+    .long-press-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .long-press-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    .progress-fill {
       position: absolute;
       top: 0;
       left: 0;
       height: 100%;
-      background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.4));
+      background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.5));
       width: 0%;
       transition: width 0.1s linear;
       z-index: 1;
       border-radius: 16px;
     }
-    .long-press-text {
+    .btn-text {
       position: relative;
       z-index: 2;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
+    }
+    
+    /* 控制区域 - 紧凑布局 */
+    .control-section {
+      padding: 12px 20px;
+    }
+    .date-control {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .date-input {
+      flex: 1;
+      background: rgba(255,255,255,.08);
+      color: #e7eefc;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+    .control-btn {
+      background: rgba(255,255,255,.1);
+      color: #e7eefc;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .control-btn:active {
+      transform: scale(0.95);
+    }
+    
+    /* 按钮组 - 手机端一行三个 */
+    .btn-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn-group button {
+      padding: 12px 8px;
+      font-size: 13px;
+      min-height: 44px;
+    }
+    
+    /* 信息显示区域 */
+    .info-display {
+      padding: 14px 20px;
+      background: rgba(0,0,0,0.2);
+      margin: 8px 0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .info-row {
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
+      opacity: 0.9;
+    }
+    .highlight {
+      color: #7aa7ff;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    
+    /* 日历区域 - 手机端优化 */
+    .calendar-section {
+      padding: 16px 20px 24px;
+    }
+    .calendar-title {
+      font-size: 13px;
+      opacity: 0.8;
+      text-align: center;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .calendar-day.checked {
+      background: linear-gradient(135deg, rgba(122,167,255,0.25), rgba(93,142,255,0.35));
+      border-color: rgba(122,167,255,0.4);
+    }
+    .calendar-day.today {
+      outline: 2px solid rgba(122,167,255,0.6);
+      outline-offset: -2px;
     }
     
     /* 提示框 */
     .toast {
       position: fixed;
-      top: 30px;
+      top: 60px;
       left: 50%;
-      transform: translateX(-50%) translateY(-40px);
-      background: rgba(0,0,0,0.85);
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(0,0,0,0.9);
       color: white;
-      padding: 16px 28px;
-      border-radius: 14px;
+      padding: 12px 20px;
+      border-radius: 12px;
       z-index: 1000;
       opacity: 0;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.3s ease;
       border: 1px solid rgba(255,255,255,0.2);
-      max-width: 90vw;
+      font-size: 14px;
+      max-width: 90%;
       text-align: center;
-      font-size: 15px;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
       pointer-events: none;
     }
     .toast.show {
@@ -307,135 +287,247 @@
     /* 震动动画 */
     @keyframes vibrate {
       0% { transform: translateX(0); }
-      25% { transform: translateX(-3px); }
-      50% { transform: translateX(3px); }
-      75% { transform: translateX(-3px); }
+      25% { transform: translateX(-2px); }
+      50% { transform: translateX(2px); }
+      75% { transform: translateX(-2px); }
       100% { transform: translateX(0); }
     }
     .vibrate {
-      animation: vibrate 0.15s infinite;
+      animation: vibrate 0.1s infinite;
     }
     
     /* 电脑端优化 */
     @media (min-width: 768px) {
-      .card {
-        padding: 40px;
+      .container {
+        padding: 20px;
+      }
+      .header {
+        padding: 24px 30px 16px;
+        border-radius: 20px 20px 0 0;
       }
       h1 {
         font-size: 32px;
       }
       .sub {
-        font-size: 16px;
+        font-size: 15px;
       }
-      .stat {
-        padding: 25px 20px;
+      .stats-grid {
+        padding: 24px 30px 16px;
+        gap: 20px;
       }
-      .value {
-        font-size: 36px;
+      .stat-card {
+        padding: 20px 15px;
+        min-height: 100px;
+        border-radius: 16px;
       }
-      button {
-        font-size: 18px;
-        padding: 20px 30px;
-      }
-      .pill {
-        padding: 16px 24px;
-        font-size: 16px;
-      }
-      .day {
-        padding: 18px 0;
+      .stat-label {
         font-size: 14px;
       }
-    }
-    
-    /* 手机端优化 */
-    @media (max-width: 767px) {
-      body {
-        padding: 15px;
+      .stat-value {
+        font-size: 32px;
       }
-      .card {
-        padding: 20px 15px;
-        border-radius: 18px;
+      .main-action {
+        padding: 24px 30px;
+        margin: 16px 0;
+        border-radius: 0;
       }
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
+      .long-press-btn {
+        padding: 24px;
+        font-size: 20px;
+        min-height: 80px;
+        border-radius: 20px;
       }
-      .button-group {
-        grid-template-columns: 1fr;
+      .btn-text {
+        font-size: 20px;
       }
-      .control-group {
-        grid-template-columns: 1fr;
+      .status-pill {
+        padding: 14px 24px;
+        font-size: 16px;
+        border-radius: 24px;
       }
-      .control-group button {
-        width: 100%;
+      .control-section {
+        padding: 20px 30px;
       }
-      .calendar {
-        gap: 6px;
+      .date-control {
+        max-width: 400px;
+        margin: 0 auto 24px;
       }
-      .day {
-        padding: 12px 0;
-        font-size: 12px;
-      }
-      button {
-        padding: 16px 20px;
+      .date-input {
+        padding: 14px 16px;
         font-size: 16px;
       }
+      .control-btn {
+        padding: 14px 24px;
+        font-size: 16px;
+      }
+      .btn-group {
+        max-width: 600px;
+        margin: 0 auto 20px;
+        gap: 15px;
+      }
+      .btn-group button {
+        padding: 16px 12px;
+        font-size: 15px;
+        min-height: 52px;
+        border-radius: 14px;
+      }
+      .info-display {
+        padding: 20px 30px;
+        max-width: 600px;
+        margin: 20px auto;
+        border-radius: 16px;
+      }
+      .info-row {
+        font-size: 15px;
+      }
+      .highlight {
+        font-size: 18px;
+      }
+      .calendar-section {
+        padding: 24px 30px 30px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .calendar-title {
+        font-size: 15px;
+        margin-bottom: 16px;
+      }
+      .calendar-grid {
+        gap: 8px;
+      }
+      .calendar-day {
+        border-radius: 10px;
+        font-size: 13px;
+      }
+      .toast {
+        top: 80px;
+        padding: 16px 28px;
+        font-size: 16px;
+        border-radius: 14px;
+      }
     }
     
-    /* 超小屏幕优化 */
-    @media (max-width: 360px) {
-      body {
-        padding: 10px;
+    /* 大屏幕电脑优化 */
+    @media (min-width: 1024px) {
+      .container {
+        padding: 40px;
       }
-      .card {
-        padding: 15px 12px;
+      .header {
+        border-radius: 24px 24px 0 0;
       }
-      h1 {
-        font-size: 24px;
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        padding: 30px;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0;
+      }
+      .main-action {
+        grid-column: 1 / -1;
+        padding: 30px;
+        border-radius: 20px;
+      }
+      .control-section {
+        grid-column: 1 / -1;
+      }
+      .info-display {
+        grid-column: 1 / -1;
+      }
+      .calendar-section {
+        grid-column: 1 / -1;
+      }
+    }
+    
+    /* 手机端单屏优化 */
+    @media (max-height: 700px) and (max-width: 767px) {
+      .stats-grid {
+        padding: 12px 16px 8px;
+        gap: 8px;
+      }
+      .stat-card {
+        padding: 10px 6px;
+        min-height: 60px;
+      }
+      .stat-label {
+        font-size: 10px;
+        margin-bottom: 4px;
+      }
+      .stat-value {
+        font-size: 18px;
+      }
+      .main-action {
+        padding: 12px 16px;
+      }
+      .long-press-btn {
+        padding: 16px;
+        min-height: 56px;
+      }
+      .btn-text {
+        font-size: 15px;
+      }
+      .status-pill {
+        padding: 8px 14px;
+        font-size: 13px;
+      }
+      .control-section {
+        padding: 10px 16px;
+      }
+      .date-control {
         margin-bottom: 12px;
       }
-      .sub {
+      .date-input,
+      .control-btn {
+        padding: 10px 12px;
         font-size: 13px;
-        margin-bottom: 20px;
       }
-      .long-press-text {
+      .btn-group {
+        margin-bottom: 10px;
+      }
+      .info-display {
+        padding: 12px 16px;
+      }
+      .info-row {
+        font-size: 12px;
+      }
+      .calendar-section {
+        padding: 14px 16px 20px;
+      }
+      .calendar-title {
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+      .calendar-day {
+        font-size: 10px;
+      }
+    }
+    
+    /* 超小屏幕手机 */
+    @media (max-width: 360px) {
+      .header {
+        padding: 14px 16px 10px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      .sub {
+        font-size: 12px;
+      }
+      .stats-grid {
+        padding: 10px 12px 6px;
+        gap: 6px;
+      }
+      .stat-card {
+        padding: 8px 4px;
+        min-height: 56px;
+      }
+      .stat-value {
         font-size: 16px;
       }
-    }
-    
-    /* 大屏幕优化 */
-    @media (min-width: 1200px) {
-      .container {
-        max-width: 900px;
-      }
-      .card {
-        padding: 50px;
-      }
-    }
-    
-    /* 打印样式 */
-    @media print {
-      body {
-        background: white;
-        color: black;
-      }
-      .card {
-        background: white;
-        border: 1px solid #ddd;
-        box-shadow: none;
-      }
-      button {
-        display: none;
-      }
-    }
-    
-    /* 高对比度模式支持 */
-    @media (prefers-contrast: high) {
-      .stat {
-        border: 2px solid currentColor;
-      }
-      button {
-        border: 2px solid currentColor;
+      .calendar-day {
+        font-size: 9px;
       }
     }
     
@@ -454,57 +546,68 @@
 </head>
 <body>
   <div class="container">
-    <div class="card">
+    <!-- 头部区域 -->
+    <div class="header">
       <h1>活着吗</h1>
-      <p class="sub">每天长按按钮5秒确认你今天还活着。数据仅保存在本地浏览器，保护你的隐私。</p>
-
-      <div class="grid">
-        <div class="stat">
-          <div class="label">活了几天</div>
-          <div class="value" id="daysAlive">—</div>
-        </div>
-        <div class="stat">
-          <div class="label">连续打卡</div>
-          <div class="value" id="streak">—</div>
-        </div>
-        <div class="stat">
-          <div class="label">总打卡天数</div>
-          <div class="value" id="total">—</div>
-        </div>
+      <p class="sub">长按5秒确认今天还活着，数据仅保存在本地</p>
+    </div>
+    
+    <!-- 统计卡片 -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">活了几天</div>
+        <div class="stat-value" id="daysAlive">—</div>
       </div>
-
-      <div class="main-action">
-        <button class="primary long-press-progress" id="checkInBtn">
-          <div class="long-press-fill" id="progressFill"></div>
-          <span class="long-press-text">长按5秒确认我还活着</span>
-        </button>
-        <div style="text-align: center; margin-top: 20px;">
-          <span class="pill" id="todayStatus">今日状态：未打卡</span>
-        </div>
+      <div class="stat-card">
+        <div class="stat-label">连续打卡</div>
+        <div class="stat-value" id="streak">—</div>
       </div>
-
-      <div class="control-group">
-        <input type="date" id="startDate" />
-        <button class="ghost" id="setStartBtn">设置开始日</button>
-      </div>
-
-      <div class="button-group">
-        <button class="ghost" id="exportBtn">导出数据</button>
-        <button class="ghost" id="importBtn">导入数据</button>
-        <button class="danger" id="resetBtn">清空数据</button>
-      </div>
-
-      <div class="log" id="log"></div>
-
-      <div class="calendar-container">
-        <div class="calendar-title">
-          最近 28 天打卡记录（蓝色=已打卡）
-        </div>
-        <div class="calendar" id="calendar"></div>
+      <div class="stat-card">
+        <div class="stat-label">总打卡天数</div>
+        <div class="stat-value" id="total">—</div>
       </div>
     </div>
+    
+    <!-- 主打卡区域 -->
+    <div class="main-action">
+      <div class="action-row">
+        <button class="long-press-btn" id="checkInBtn">
+          <div class="progress-fill" id="progressFill"></div>
+          <span class="btn-text" id="btnText">长按5秒确认我还活着</span>
+        </button>
+        <div class="status-pill" id="todayStatus">今日状态：未打卡</div>
+      </div>
+    </div>
+    
+    <!-- 控制区域 -->
+    <div class="control-section">
+      <div class="date-control">
+        <input type="date" class="date-input" id="startDate">
+        <button class="control-btn" id="setStartBtn">设置</button>
+      </div>
+      
+      <div class="btn-group">
+        <button class="control-btn" id="exportBtn">导出</button>
+        <button class="control-btn" id="importBtn">导入</button>
+        <button class="control-btn danger" id="resetBtn">清空</button>
+      </div>
+    </div>
+    
+    <!-- 信息显示 -->
+    <div class="info-display">
+      <div class="info-row" id="log">
+        今天：<span class="highlight" id="todayDate">—</span> | 
+        开始日：<span class="highlight" id="startDateDisplay">—</span>
+      </div>
+    </div>
+    
+    <!-- 日历区域 -->
+    <div class="calendar-section">
+      <div class="calendar-title">最近28天打卡记录</div>
+      <div class="calendar-grid" id="calendar"></div>
+    </div>
   </div>
-
+  
   <!-- 提示框 -->
   <div class="toast" id="toast"></div>
 
@@ -512,10 +615,9 @@
     const KEY = "huozhe_ma_v1";
     const el = (id) => document.getElementById(id);
     const LONG_PRESS_TIME = 5000;
-
+    
     // 设备检测
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const isDesktop = !isMobile;
+    const isMobile = window.innerWidth <= 767;
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     // 显示提示
@@ -528,42 +630,33 @@
       }, duration);
     }
 
-    // 设备适配的提醒
+    // 提醒功能
     function checkReminder() {
       const data = ensureData();
-      const todayKey = yyyyMmDd(new Date());
+      const todayKey = getTodayString();
       
       if (!data.checkins[todayKey]) {
         const lastReminder = localStorage.getItem("last_reminder");
-        const today = yyyyMmDd(new Date());
+        const today = getTodayString();
         
         if (lastReminder !== today) {
-          // 设备适配的提醒方式
-          let message = "今天还活着吗？记得打卡确认哦！";
-          if (isMobile) {
-            message = "📱 " + message;
-          } else {
-            message = "💻 " + message;
-          }
-          
-          // 手机震动反馈
-          if (isMobile && navigator.vibrate) {
-            navigator.vibrate([200, 100, 200]);
-          }
-          
           setTimeout(() => {
-            showToast(message, 5000);
+            showToast(isMobile ? "📱 今天还活着吗？" : "💻 今天还活着吗？", 4000);
             localStorage.setItem("last_reminder", today);
-          }, 1500);
+          }, 1000);
         }
       }
     }
 
-    function yyyyMmDd(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
+    // 工具函数
+    function getTodayString() {
+      const now = new Date();
+      return now.toISOString().split('T')[0];
+    }
+    
+    function formatDate(dateStr) {
+      const [year, month, day] = dateStr.split('-');
+      return `${year}年${month}月${day}日`;
     }
 
     function parseDateStr(s) {
@@ -578,11 +671,11 @@
       return Math.floor(ms / 86400000) + 1;
     }
 
+    // 数据管理
     function load() {
       try {
         const raw = localStorage.getItem(KEY);
-        if (!raw) return null;
-        return JSON.parse(raw);
+        return raw ? JSON.parse(raw) : null;
       } catch { return null; }
     }
 
@@ -591,9 +684,8 @@
     }
 
     function defaultData() {
-      const today = new Date();
       return {
-        startDate: yyyyMmDd(today),
+        startDate: getTodayString(),
         checkins: {}
       };
     }
@@ -607,20 +699,21 @@
       return data;
     }
 
+    // 计算统计信息
     function computeStats(data) {
       const today = new Date();
       const start = parseDateStr(data.startDate);
       const daysAlive = daysBetweenInclusive(start, today);
 
-      const dates = Object.keys(data.checkins).filter(k => data.checkins[k]).sort();
+      const dates = Object.keys(data.checkins).filter(k => data.checkins[k]);
       const total = dates.length;
 
-      const todayKey = yyyyMmDd(today);
+      const todayKey = getTodayString();
       let streak = 0;
 
       let cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       while (true) {
-        const key = yyyyMmDd(cursor);
+        const key = cursor.toISOString().split('T')[0];
         if (data.checkins[key]) {
           streak++;
           cursor.setDate(cursor.getDate() - 1);
@@ -629,41 +722,48 @@
         }
       }
 
-      return { daysAlive, total, streak, todayKey, hasToday: !!data.checkins[todayKey] };
+      return { 
+        daysAlive, 
+        total, 
+        streak, 
+        todayKey, 
+        hasToday: !!data.checkins[todayKey] 
+      };
     }
 
+    // 渲染函数
     function render() {
       const data = ensureData();
       const { daysAlive, total, streak, todayKey, hasToday } = computeStats(data);
 
+      // 更新统计
       el("daysAlive").textContent = daysAlive;
       el("total").textContent = total;
       el("streak").textContent = streak;
 
+      // 更新日期输入
       el("startDate").value = data.startDate;
 
-      el("todayStatus").textContent = `今日状态：${hasToday ? "已打卡 ✅" : "未打卡 ⏳"}`;
-      
+      // 更新按钮状态
       const checkInBtn = el("checkInBtn");
+      const btnText = el("btnText");
       checkInBtn.classList.remove("vibrate");
+      
       if (hasToday) {
-        checkInBtn.innerHTML = '<span class="long-press-text">今天已打卡 ✓</span>';
+        btnText.textContent = "今天已打卡 ✓";
         checkInBtn.disabled = true;
+        el("todayStatus").textContent = "今日状态：已打卡 ✅";
       } else {
-        checkInBtn.innerHTML = `
-          <div class="long-press-fill" id="progressFill" style="width: 0%"></div>
-          <span class="long-press-text">长按5秒确认我还活着</span>
-        `;
+        btnText.textContent = "长按5秒确认我还活着";
         checkInBtn.disabled = false;
+        el("todayStatus").textContent = "今日状态：未打卡 ⏳";
       }
 
-      const start = parseDateStr(data.startDate);
-      el("log").innerHTML = `
-        <div>今天：<strong>${todayKey}</strong></div>
-        <div>开始日：<strong>${data.startDate}</strong></div>
-        <div style="margin-top: 8px; font-size: 16px;">已度过第 <strong style="color: #7aa7ff; font-size: 18px;">${daysAlive}</strong> 天</div>
-      `;
-
+      // 更新信息显示
+      el("todayDate").textContent = todayKey;
+      el("startDateDisplay").textContent = data.startDate;
+      
+      // 渲染日历
       renderCalendar(data, 28);
     }
 
@@ -671,85 +771,62 @@
       const box = el("calendar");
       box.innerHTML = "";
       const today = new Date();
+      
       for (let i = nDays - 1; i >= 0; i--) {
         const d = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         d.setDate(d.getDate() - i);
-        const key = yyyyMmDd(d);
+        const key = d.toISOString().split('T')[0];
 
-        const div = document.createElement("div");
-        div.className = "day" + (data.checkins[key] ? " checked" : "") + (key === yyyyMmDd(today) ? " today" : "");
-        div.title = `${key}${data.checkins[key] ? " - 已打卡" : " - 未打卡"}`;
-        div.textContent = d.getDate();
-        box.appendChild(div);
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "calendar-day";
+        if (data.checkins[key]) dayDiv.classList.add("checked");
+        if (key === getTodayString()) dayDiv.classList.add("today");
+        
+        dayDiv.textContent = d.getDate();
+        dayDiv.title = `${key}${data.checkins[key] ? " - 已打卡" : " - 未打卡"}`;
+        box.appendChild(dayDiv);
       }
     }
 
-    // 双端兼容的长按逻辑
+    // 长按逻辑
     let pressTimer = null;
     let pressStartTime = 0;
     let progressInterval = null;
-    let isLongPressing = false;
 
     function startLongPress(event) {
       if (event.cancelable) event.preventDefault();
       
-      const btn = el("checkInBtn");
       const data = ensureData();
-      const todayKey = yyyyMmDd(new Date());
+      const todayKey = getTodayString();
       
-      if (data.checkins[todayKey] || btn.disabled) {
-        return;
-      }
+      if (data.checkins[todayKey]) return;
 
-      isLongPressing = true;
       pressStartTime = Date.now();
-      btn.classList.add("vibrate");
-      
-      // 设备适配的反馈
-      if (isMobile && navigator.vibrate) {
-        navigator.vibrate(100);
-      }
+      el("checkInBtn").classList.add("vibrate");
       
       showToast("保持按住... 5秒后完成打卡", LONG_PRESS_TIME);
       
-      const progressFill = el("progressFill");
       let progress = 0;
-      
       progressInterval = setInterval(() => {
-        if (!isLongPressing) return;
-        
         const elapsed = Date.now() - pressStartTime;
         progress = Math.min((elapsed / LONG_PRESS_TIME) * 100, 100);
-        if (progressFill) {
-          progressFill.style.width = progress + "%";
-        }
+        el("progressFill").style.width = progress + "%";
         
         const remaining = Math.max(0, (LONG_PRESS_TIME - elapsed) / 1000);
         if (remaining > 0) {
-          const textSpan = btn.querySelector('.long-press-text');
-          if (textSpan) {
-            textSpan.textContent = `保持按住... ${remaining.toFixed(1)}秒`;
-          }
+          el("btnText").textContent = `保持按住... ${remaining.toFixed(1)}秒`;
         }
       }, 50);
       
       pressTimer = setTimeout(() => {
-        if (isLongPressing) {
-          completeCheckIn();
-          // 成功反馈
-          if (isMobile && navigator.vibrate) {
-            navigator.vibrate([100, 50, 100]);
-          }
-          btn.classList.remove("vibrate");
-          showToast(isDesktop ? "🎉 打卡成功！今天确认活着" : "✅ 打卡成功！今天确认活着", 3000);
-        }
-        if (progressInterval) clearInterval(progressInterval);
+        completeCheckIn();
+        clearInterval(progressInterval);
+        el("checkInBtn").classList.remove("vibrate");
+        showToast("✅ 打卡成功！", 2000);
       }, LONG_PRESS_TIME);
     }
 
     function cancelLongPress() {
-      isLongPressing = false;
-      
       if (pressTimer) {
         clearTimeout(pressTimer);
         pressTimer = null;
@@ -759,32 +836,25 @@
         progressInterval = null;
       }
       
-      const btn = el("checkInBtn");
-      btn.classList.remove("vibrate");
+      const checkInBtn = el("checkInBtn");
+      checkInBtn.classList.remove("vibrate");
       
-      const progressFill = el("progressFill");
-      if (progressFill) {
-        progressFill.style.width = "0%";
-      }
-      
-      const textSpan = btn.querySelector('.long-press-text');
-      if (textSpan && !btn.disabled) {
-        textSpan.textContent = "长按5秒确认我还活着";
-      }
+      el("progressFill").style.width = "0%";
+      el("btnText").textContent = "长按5秒确认我还活着";
     }
 
     function completeCheckIn() {
       const data = ensureData();
-      const key = yyyyMmDd(new Date());
+      const key = getTodayString();
       data.checkins[key] = true;
       save(data);
       render();
     }
 
-    // 事件监听 - 双端兼容
+    // 事件监听
     const checkInBtn = el("checkInBtn");
     
-    // 触摸设备优先使用触摸事件
+    // 触摸设备
     if (isTouchDevice) {
       checkInBtn.addEventListener("touchstart", (e) => {
         startLongPress(e);
@@ -793,26 +863,14 @@
       
       checkInBtn.addEventListener("touchend", cancelLongPress);
       checkInBtn.addEventListener("touchcancel", cancelLongPress);
-      
-      // 防止触摸时页面滚动
-      document.addEventListener('touchmove', function(e) {
-        if (isLongPressing && e.target === checkInBtn) {
-          e.preventDefault();
-        }
-      }, { passive: false });
     }
     
-    // 桌面设备使用鼠标事件
+    // 鼠标设备
     checkInBtn.addEventListener("mousedown", startLongPress);
     checkInBtn.addEventListener("mouseup", cancelLongPress);
     checkInBtn.addEventListener("mouseleave", cancelLongPress);
     
-    // 防止右键菜单
-    checkInBtn.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-    });
-
-    // 其他功能 - 双端兼容
+    // 其他事件
     el("setStartBtn").addEventListener("click", () => {
       const data = ensureData();
       const v = el("startDate").value;
@@ -820,108 +878,86 @@
       data.startDate = v;
       save(data);
       render();
-      showToast("开始日已更新", 2000);
+      showToast("开始日已更新", 1500);
     });
 
     el("resetBtn").addEventListener("click", () => {
-      const ok = confirm("确定清空所有数据吗？这会删除开始日与全部打卡记录。");
-      if (!ok) return;
-      localStorage.removeItem(KEY);
-      render();
-      showToast("数据已清空", 2000);
+      if (confirm("确定清空所有数据吗？")) {
+        localStorage.removeItem(KEY);
+        render();
+        showToast("数据已清空", 1500);
+      }
     });
 
-    // 导出功能 - 双端适配
     el("exportBtn").addEventListener("click", async () => {
       const data = ensureData();
       const text = JSON.stringify(data, null, 2);
       
-      // 手机优先使用分享API
       if (isMobile && navigator.share) {
         try {
           const blob = new Blob([text], { type: "application/json" });
           const file = new File([blob], "活着吗打卡记录.json", { type: "application/json" });
           await navigator.share({
             title: '活着吗打卡记录',
-            text: '这是我的每日打卡记录',
             files: [file]
           });
           return;
         } catch (err) {
-          console.log('分享失败，使用备用方案:', err);
+          console.log('分享失败');
         }
       }
       
-      // 桌面端或分享失败的备选方案
       try {
         await navigator.clipboard.writeText(text);
-        showToast("📋 数据已复制到剪贴板", 2000);
+        showToast("📋 已复制到剪贴板", 1500);
       } catch {
-        // 下载文件
         const blob = new Blob([text], { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `活着吗打卡记录-${yyyyMmDd(new Date())}.json`;
-        document.body.appendChild(a);
+        a.download = `活着吗-${getTodayString()}.json`;
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
-        showToast("📥 文件已下载", 2000);
+        showToast("📥 文件已下载", 1500);
       }
     });
 
-    // 导入功能 - 双端适配
     el("importBtn").addEventListener("click", () => {
       if (isMobile) {
-        // 手机端使用文件输入
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.json,application/json';
-        input.style.display = 'none';
-        document.body.appendChild(input);
-        
+        input.accept = '.json';
         input.onchange = (e) => {
           const file = e.target.files[0];
-          if (!file) {
-            document.body.removeChild(input);
-            return;
-          }
+          if (!file) return;
           
           const reader = new FileReader();
           reader.onload = (e) => {
             try {
-              const text = e.target.result;
-              const obj = JSON.parse(text);
-              if (!obj.startDate || typeof obj.checkins !== "object") {
-                throw new Error("格式不对");
+              const obj = JSON.parse(e.target.result);
+              if (obj.startDate && obj.checkins) {
+                save(obj);
+                render();
+                showToast("✅ 导入成功", 1500);
               }
-              save(obj);
-              render();
-              showToast("✅ 导入成功！", 2000);
-            } catch (e) {
-              showToast("❌ 导入失败：文件格式不正确", 2000);
+            } catch {
+              showToast("❌ 文件格式错误", 1500);
             }
-            document.body.removeChild(input);
           };
           reader.readAsText(file);
         };
-        
         input.click();
       } else {
-        // 桌面端使用粘贴方式
-        const text = prompt("请粘贴导出的JSON数据：");
+        const text = prompt("粘贴导出的JSON数据：");
         if (!text) return;
         
         try {
           const obj = JSON.parse(text);
-          if (!obj.startDate || typeof obj.checkins !== "object") {
-            throw new Error("格式不对");
+          if (obj.startDate && obj.checkins) {
+            save(obj);
+            render();
+            showToast("✅ 导入成功", 1500);
           }
-          save(obj);
-          render();
-          showToast("✅ 导入成功！", 2000);
-        } catch (e) {
-          showToast("❌ 导入失败：JSON格式不正确", 2000);
+        } catch {
+          showToast("❌ JSON格式错误", 1500);
         }
       }
     });
@@ -929,27 +965,28 @@
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
       render();
-      setTimeout(checkReminder, 500);
+      checkReminder();
       
-      // 添加设备类名以便CSS适配
-      if (isMobile) {
-        document.body.classList.add('mobile');
-      } else {
-        document.body.classList.add('desktop');
+      // 自动调整布局以适应屏幕
+      function adjustLayout() {
+        const vh = window.innerHeight;
+        const vw = window.innerWidth;
+        
+        // 手机端且屏幕高度较小，进一步压缩
+        if (vw <= 767 && vh <= 700) {
+          document.body.style.fontSize = '14px';
+        }
       }
+      
+      adjustLayout();
+      window.addEventListener('resize', adjustLayout);
     });
-
+    
     // 页面可见时刷新
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         render();
-        checkReminder();
       }
-    });
-    
-    // 窗口大小变化时调整
-    window.addEventListener('resize', () => {
-      // 可以在这里添加响应式调整
     });
   </script>
 </body>
