@@ -2,191 +2,465 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>活着吗</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b0f17">
   <style>
-    :root { font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
-    body { margin: 0; background: #0b0f17; color: #e7eefc; }
-    .wrap { max-width: 780px; margin: 0 auto; padding: 28px 18px 40px; }
-    .card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
-            border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    h1 { margin: 0 0 10px; font-size: 22px; letter-spacing: .5px; }
-    .sub { opacity: .85; margin: 0 0 18px; font-size: 14px; line-height: 1.6; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .stat { padding: 14px; border-radius: 14px; background: rgba(0,0,0,.18);
-            border: 1px solid rgba(255,255,255,.10); }
-    .label { font-size: 12px; opacity: .8; }
-    .value { font-size: 24px; margin-top: 6px; font-weight: 700; }
-    .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
-    button { cursor: pointer; border: 0; border-radius: 14px; padding: 12px 14px; font-weight: 700; 
-             transition: all 0.2s ease; }
-    .primary { background: #7aa7ff; color: #0b0f17; }
-    .ghost { background: rgba(255,255,255,.10); color: #e7eefc; border: 1px solid rgba(255,255,255,.16); }
-    .danger { background: rgba(255,120,120,.14); color: #ffb6b6; border: 1px solid rgba(255,120,120,.28); }
-    input[type="date"] { background: rgba(255,255,255,.08); color: #e7eefc;
-      border: 1px solid rgba(255,255,255,.18); border-radius: 12px; padding: 10px 12px; }
-    .muted { opacity: .8; font-size: 13px; line-height: 1.6; }
-    .log { margin-top: 14px; font-size: 13px; opacity: .9; }
-    .pill { display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px;
-            background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14); }
-    .calendar { margin-top: 14px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .day { text-align:center; padding: 10px 0; border-radius: 12px; font-size: 12px;
-           border: 1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.18); }
-    .day.checked { background: rgba(122,167,255,.22); border-color: rgba(122,167,255,.35); }
-    .day.today { outline: 2px solid rgba(255,255,255,.25); }
+    :root { 
+      font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      --safe-area-inset-top: env(safe-area-inset-top, 0px);
+      --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body { 
+      margin: 0; 
+      background: #0b0f17; 
+      color: #e7eefc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card { 
+      background: rgba(255,255,255,.06); 
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px; 
+      padding: 30px 25px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3); 
+      backdrop-filter: blur(10px);
+    }
+    h1 { 
+      margin: 0 0 15px; 
+      font-size: 28px; 
+      letter-spacing: .5px; 
+      text-align: center;
+      color: #7aa7ff;
+    }
+    .sub { 
+      opacity: .85; 
+      margin: 0 0 25px; 
+      font-size: 15px; 
+      line-height: 1.6;
+      text-align: center;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .grid { 
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 15px; 
+      margin-bottom: 25px;
+    }
+    .stat { 
+      padding: 20px 15px; 
+      border-radius: 16px; 
+      background: rgba(0,0,0,.15);
+      border: 1px solid rgba(255,255,255,.12); 
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,.2);
+    }
+    .label { 
+      font-size: 13px; 
+      opacity: .8; 
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .value { 
+      font-size: 32px; 
+      font-weight: 700; 
+      line-height: 1.2;
+      background: linear-gradient(135deg, #7aa7ff, #a3c2ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .main-action {
+      margin: 30px 0;
+    }
+    button { 
+      cursor: pointer; 
+      border: 0; 
+      border-radius: 16px; 
+      padding: 18px 24px; 
+      font-weight: 700; 
+      font-size: 17px;
+      transition: all 0.2s ease; 
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    button:hover:not(:disabled) {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(122, 167, 255, 0.3);
+    }
+    button:active:not(:disabled) {
+      transform: translateY(0);
+      filter: brightness(0.95);
+    }
+    .primary { 
+      background: linear-gradient(135deg, #7aa7ff, #5d8eff); 
+      color: #0b0f17; 
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+    .primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+    }
+    .ghost { 
+      background: rgba(255,255,255,.08); 
+      color: #e7eefc; 
+      border: 1px solid rgba(255,255,255,.16); 
+    }
+    .ghost:hover {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.25);
+    }
+    .danger { 
+      background: rgba(255,120,120,.15); 
+      color: #ffb6b6; 
+      border: 1px solid rgba(255,120,120,.3); 
+    }
+    .danger:hover {
+      background: rgba(255,120,120,.2);
+      border-color: rgba(255,120,120,.4);
+    }
+    input[type="date"] { 
+      background: rgba(255,255,255,.08); 
+      color: #e7eefc;
+      border: 1px solid rgba(255,255,255,.18); 
+      border-radius: 12px; 
+      padding: 14px 16px; 
+      font-size: 15px;
+      width: 100%;
+      transition: all 0.2s;
+    }
+    input[type="date"]:hover,
+    input[type="date"]:focus {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.25);
+      outline: none;
+    }
+    .control-group {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin: 20px 0;
+    }
+    .button-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .log { 
+      margin: 25px 0; 
+      font-size: 14px; 
+      opacity: .9; 
+      text-align: center;
+      padding: 16px;
+      background: rgba(0,0,0,.12);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .pill { 
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px; 
+      padding: 14px 20px; 
+      border-radius: 999px;
+      background: rgba(255,255,255,.08); 
+      border: 1px solid rgba(255,255,255,.14); 
+      font-size: 15px;
+      font-weight: 500;
+      margin: 0 auto;
+      transition: all 0.2s;
+    }
+    .pill:hover {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.2);
+    }
+    .calendar-container {
+      margin: 30px 0 20px 0;
+    }
+    .calendar-title {
+      opacity: .8; 
+      font-size: 14px; 
+      line-height: 1.6; 
+      text-align: center;
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+    .calendar { 
+      display: grid; 
+      grid-template-columns: repeat(7, 1fr); 
+      gap: 8px; 
+    }
+    .day { 
+      text-align: center; 
+      padding: 14px 0; 
+      border-radius: 12px; 
+      font-size: 13px;
+      border: 1px solid rgba(255,255,255,.1); 
+      background: rgba(0,0,0,.18); 
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-weight: 500;
+      cursor: default;
+    }
+    .day:hover {
+      background: rgba(255,255,255,.05);
+    }
+    .day.checked { 
+      background: linear-gradient(135deg, rgba(122,167,255,.25), rgba(93,142,255,.35)); 
+      border-color: rgba(122,167,255,.5); 
+    }
+    .day.today { 
+      outline: 3px solid rgba(122,167,255,.6); 
+      outline-offset: -3px;
+      position: relative;
+    }
+    .day.today::after {
+      content: '今日';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 9px;
+      color: #7aa7ff;
+    }
     
-    /* 长按进度条 */
+    /* 长按进度条 - 双端兼容 */
     .long-press-progress {
       position: relative;
       overflow: hidden;
+      min-height: 70px;
     }
     .long-press-fill {
       position: absolute;
       top: 0;
       left: 0;
       height: 100%;
-      background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4));
+      background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.4));
       width: 0%;
       transition: width 0.1s linear;
       z-index: 1;
+      border-radius: 16px;
     }
     .long-press-text {
       position: relative;
       z-index: 2;
+      font-size: 18px;
+      font-weight: 600;
     }
     
     /* 提示框 */
     .toast {
       position: fixed;
-      top: 20px;
+      top: 30px;
       left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: rgba(0,0,0,0.8);
+      transform: translateX(-50%) translateY(-40px);
+      background: rgba(0,0,0,0.85);
       color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
+      padding: 16px 28px;
+      border-radius: 14px;
       z-index: 1000;
       opacity: 0;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       border: 1px solid rgba(255,255,255,0.2);
-      max-width: 90%;
+      max-width: 90vw;
       text-align: center;
+      font-size: 15px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      pointer-events: none;
     }
     .toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
     
-    /* 温和提醒框 */
-    .reminder {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      background: rgba(20, 25, 40, 0.95);
-      border: 1px solid rgba(122, 167, 255, 0.3);
-      border-radius: 20px;
-      padding: 30px;
-      z-index: 2000;
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
-    }
-    .reminder.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    .reminder h2 {
-      margin: 0 0 15px 0;
-      color: #7aa7ff;
-      text-align: center;
-      font-size: 24px;
-    }
-    .reminder p {
-      margin: 0 0 25px 0;
-      line-height: 1.6;
-      text-align: center;
-      font-size: 16px;
-    }
-    .reminder-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-    .reminder button {
-      min-width: 120px;
-    }
-    .reminder-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 1999;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    .reminder-overlay.show {
-      opacity: 1;
-    }
-    
     /* 震动动画 */
     @keyframes vibrate {
       0% { transform: translateX(0); }
-      25% { transform: translateX(-2px); }
-      50% { transform: translateX(2px); }
-      75% { transform: translateX(-2px); }
+      25% { transform: translateX(-3px); }
+      50% { transform: translateX(3px); }
+      75% { transform: translateX(-3px); }
       100% { transform: translateX(0); }
     }
     .vibrate {
-      animation: vibrate 0.1s infinite;
+      animation: vibrate 0.15s infinite;
     }
     
-    /* 心跳动画 - 用于提醒 */
-    @keyframes heartbeat {
-      0% { transform: scale(1); }
-      25% { transform: scale(1.1); }
-      50% { transform: scale(1); }
-      75% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    .heartbeat {
-      animation: heartbeat 1.5s infinite;
-      color: #ff6b6b;
-      display: inline-block;
+    /* 电脑端优化 */
+    @media (min-width: 768px) {
+      .card {
+        padding: 40px;
+      }
+      h1 {
+        font-size: 32px;
+      }
+      .sub {
+        font-size: 16px;
+      }
+      .stat {
+        padding: 25px 20px;
+      }
+      .value {
+        font-size: 36px;
+      }
+      button {
+        font-size: 18px;
+        padding: 20px 30px;
+      }
+      .pill {
+        padding: 16px 24px;
+        font-size: 16px;
+      }
+      .day {
+        padding: 18px 0;
+        font-size: 14px;
+      }
     }
     
-    /* 今日状态特殊样式 - 未打卡时闪烁 */
-    .status-not-checked {
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.7; }
-      100% { opacity: 1; }
+    /* 手机端优化 */
+    @media (max-width: 767px) {
+      body {
+        padding: 15px;
+      }
+      .card {
+        padding: 20px 15px;
+        border-radius: 18px;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+      .control-group {
+        grid-template-columns: 1fr;
+      }
+      .control-group button {
+        width: 100%;
+      }
+      .calendar {
+        gap: 6px;
+      }
+      .day {
+        padding: 12px 0;
+        font-size: 12px;
+      }
+      button {
+        padding: 16px 20px;
+        font-size: 16px;
+      }
     }
     
-    @media (max-width: 640px){ 
-      .grid { grid-template-columns: 1fr; }
-      .reminder { padding: 20px; }
-      .reminder h2 { font-size: 20px; }
-      .reminder p { font-size: 14px; }
+    /* 超小屏幕优化 */
+    @media (max-width: 360px) {
+      body {
+        padding: 10px;
+      }
+      .card {
+        padding: 15px 12px;
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 12px;
+      }
+      .sub {
+        font-size: 13px;
+        margin-bottom: 20px;
+      }
+      .long-press-text {
+        font-size: 16px;
+      }
+    }
+    
+    /* 大屏幕优化 */
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 900px;
+      }
+      .card {
+        padding: 50px;
+      }
+    }
+    
+    /* 打印样式 */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      .card {
+        background: white;
+        border: 1px solid #ddd;
+        box-shadow: none;
+      }
+      button {
+        display: none;
+      }
+    }
+    
+    /* 高对比度模式支持 */
+    @media (prefers-contrast: high) {
+      .stat {
+        border: 2px solid currentColor;
+      }
+      button {
+        border: 2px solid currentColor;
+      }
+    }
+    
+    /* 减少动画偏好 */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .vibrate {
+        animation: none;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="container">
     <div class="card">
-      <h1>活着吗 <span class="heartbeat" id="heartbeatIcon" style="display:none;">❤️</span></h1>
-      <p class="sub">每天来这里长按打卡5秒：确认你今天还活着。数据只保存在你这台设备的浏览器里。</p>
+      <h1>活着吗</h1>
+      <p class="sub">每天长按按钮5秒确认你今天还活着。数据仅保存在本地浏览器，保护你的隐私。</p>
 
       <div class="grid">
         <div class="stat">
-          <div class="label">活了几天（从开始日到今天）</div>
+          <div class="label">活了几天</div>
           <div class="value" id="daysAlive">—</div>
         </div>
         <div class="stat">
@@ -199,43 +473,35 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="main-action">
         <button class="primary long-press-progress" id="checkInBtn">
           <div class="long-press-fill" id="progressFill"></div>
           <span class="long-press-text">长按5秒确认我还活着</span>
         </button>
-        <span class="pill" id="todayStatus">今日状态：未打卡</span>
+        <div style="text-align: center; margin-top: 20px;">
+          <span class="pill" id="todayStatus">今日状态：未打卡</span>
+        </div>
       </div>
 
-      <div class="row">
-        <label class="muted">开始日：</label>
+      <div class="control-group">
         <input type="date" id="startDate" />
         <button class="ghost" id="setStartBtn">设置开始日</button>
       </div>
 
-      <div class="row">
-        <button class="ghost" id="exportBtn">导出打卡记录（JSON）</button>
-        <button class="ghost" id="importBtn">导入打卡记录（JSON）</button>
-        <button class="danger" id="resetBtn">清空所有数据</button>
+      <div class="button-group">
+        <button class="ghost" id="exportBtn">导出数据</button>
+        <button class="ghost" id="importBtn">导入数据</button>
+        <button class="danger" id="resetBtn">清空数据</button>
       </div>
 
-      <div class="log muted" id="log"></div>
+      <div class="log" id="log"></div>
 
-      <div class="muted" style="margin-top:14px;">
-        最近 28 天打卡（蓝色=已打卡）
+      <div class="calendar-container">
+        <div class="calendar-title">
+          最近 28 天打卡记录（蓝色=已打卡）
+        </div>
+        <div class="calendar" id="calendar"></div>
       </div>
-      <div class="calendar" id="calendar"></div>
-    </div>
-  </div>
-
-  <!-- 温和提醒框 -->
-  <div class="reminder-overlay" id="reminderOverlay"></div>
-  <div class="reminder" id="reminder">
-    <h2>今天还活着吗？</h2>
-    <p>今天你还没有确认自己的存在。<br>请花5秒钟时间，长按按钮确认：<br><strong>我今天还活着</strong>。</p>
-    <div class="reminder-buttons">
-      <button class="primary" id="reminderCheckBtn">立即打卡</button>
-      <button class="ghost" id="reminderLaterBtn">稍后提醒</button>
     </div>
   </div>
 
@@ -245,13 +511,12 @@
   <script>
     const KEY = "huozhe_ma_v1";
     const el = (id) => document.getElementById(id);
-    const LONG_PRESS_TIME = 5000; // 5秒
-    const REMINDER_CHECK_INTERVAL = 30 * 60 * 1000; // 30分钟检查一次
-    const REMINDER_START_HOUR = 9; // 早上9点开始提醒
-    const REMINDER_END_HOUR = 22; // 晚上10点停止提醒
+    const LONG_PRESS_TIME = 5000;
 
-    let reminderTimer = null;
-    let lastReminderTime = 0;
+    // 设备检测
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isDesktop = !isMobile;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     // 显示提示
     function showToast(message, duration = 2000) {
@@ -263,89 +528,35 @@
       }, duration);
     }
 
-    // 显示温和提醒
-    function showReminder() {
-      const reminder = el("reminder");
-      const overlay = el("reminderOverlay");
-      const heartbeatIcon = el("heartbeatIcon");
-      
-      // 显示心跳图标
-      heartbeatIcon.style.display = "inline-block";
-      
-      // 显示提醒框
-      reminder.classList.add("show");
-      overlay.classList.add("show");
-      
-      // 记录提醒时间
-      lastReminderTime = Date.now();
-      
-      // 阻止滚动
-      document.body.style.overflow = "hidden";
-    }
-
-    // 隐藏温和提醒
-    function hideReminder() {
-      const reminder = el("reminder");
-      const overlay = el("reminderOverlay");
-      const heartbeatIcon = el("heartbeatIcon");
-      
-      reminder.classList.remove("show");
-      overlay.classList.remove("show");
-      heartbeatIcon.style.display = "none";
-      
-      // 恢复滚动
-      document.body.style.overflow = "";
-    }
-
-    // 检查是否需要提醒打卡
+    // 设备适配的提醒
     function checkReminder() {
       const data = ensureData();
       const todayKey = yyyyMmDd(new Date());
-      const now = new Date();
-      const currentHour = now.getHours();
       
-      // 如果已经打卡了，不需要提醒
-      if (data.checkins[todayKey]) {
-        hideReminder();
-        return;
-      }
-      
-      // 检查是否在提醒时间段内（早上9点到晚上10点）
-      if (currentHour >= REMINDER_START_HOUR && currentHour < REMINDER_END_HOUR) {
-        // 距离上次提醒至少30分钟
-        if (Date.now() - lastReminderTime > REMINDER_CHECK_INTERVAL) {
-          showReminder();
+      if (!data.checkins[todayKey]) {
+        const lastReminder = localStorage.getItem("last_reminder");
+        const today = yyyyMmDd(new Date());
+        
+        if (lastReminder !== today) {
+          // 设备适配的提醒方式
+          let message = "今天还活着吗？记得打卡确认哦！";
+          if (isMobile) {
+            message = "📱 " + message;
+          } else {
+            message = "💻 " + message;
+          }
+          
+          // 手机震动反馈
+          if (isMobile && navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+          }
+          
+          setTimeout(() => {
+            showToast(message, 5000);
+            localStorage.setItem("last_reminder", today);
+          }, 1500);
         }
-      } else {
-        // 不在提醒时间段，隐藏提醒
-        hideReminder();
       }
-    }
-
-    // 页面加载时检查一次
-    function initialReminderCheck() {
-      const data = ensureData();
-      const todayKey = yyyyMmDd(new Date());
-      const now = new Date();
-      const currentHour = now.getHours();
-      
-      // 如果已经打卡了，不需要提醒
-      if (data.checkins[todayKey]) {
-        return;
-      }
-      
-      // 如果是第一次加载，且当前时间在提醒时间段内，显示提醒
-      if (currentHour >= REMINDER_START_HOUR && currentHour < REMINDER_END_HOUR) {
-        // 等待页面加载完成后再显示提醒
-        setTimeout(() => {
-          showReminder();
-          lastReminderTime = Date.now();
-        }, 1500);
-      }
-      
-      // 设置定时检查
-      if (reminderTimer) clearInterval(reminderTimer);
-      reminderTimer = setInterval(checkReminder, REMINDER_CHECK_INTERVAL);
     }
 
     function yyyyMmDd(d) {
@@ -431,15 +642,7 @@
 
       el("startDate").value = data.startDate;
 
-      const todayStatus = el("todayStatus");
-      todayStatus.textContent = `今日状态：${hasToday ? "已打卡 ✅" : "未打卡 ⏳"}`;
-      
-      // 未打卡时添加闪烁效果
-      if (hasToday) {
-        todayStatus.classList.remove("status-not-checked");
-      } else {
-        todayStatus.classList.add("status-not-checked");
-      }
+      el("todayStatus").textContent = `今日状态：${hasToday ? "已打卡 ✅" : "未打卡 ⏳"}`;
       
       const checkInBtn = el("checkInBtn");
       checkInBtn.classList.remove("vibrate");
@@ -455,8 +658,11 @@
       }
 
       const start = parseDateStr(data.startDate);
-      el("log").innerHTML =
-        `今天：${todayKey}｜开始日：${data.startDate}｜从开始日算起：第 <b>${daysAlive}</b> 天`;
+      el("log").innerHTML = `
+        <div>今天：<strong>${todayKey}</strong></div>
+        <div>开始日：<strong>${data.startDate}</strong></div>
+        <div style="margin-top: 8px; font-size: 16px;">已度过第 <strong style="color: #7aa7ff; font-size: 18px;">${daysAlive}</strong> 天</div>
+      `;
 
       renderCalendar(data, 28);
     }
@@ -472,30 +678,37 @@
 
         const div = document.createElement("div");
         div.className = "day" + (data.checkins[key] ? " checked" : "") + (key === yyyyMmDd(today) ? " today" : "");
-        div.title = key + (data.checkins[key] ? " 已打卡" : " 未打卡");
-        div.textContent = key.slice(5);
+        div.title = `${key}${data.checkins[key] ? " - 已打卡" : " - 未打卡"}`;
+        div.textContent = d.getDate();
         box.appendChild(div);
       }
     }
 
-    // 长按打卡逻辑
+    // 双端兼容的长按逻辑
     let pressTimer = null;
     let pressStartTime = 0;
     let progressInterval = null;
+    let isLongPressing = false;
 
     function startLongPress(event) {
+      if (event.cancelable) event.preventDefault();
+      
       const btn = el("checkInBtn");
       const data = ensureData();
       const todayKey = yyyyMmDd(new Date());
       
-      if (data.checkins[todayKey]) {
+      if (data.checkins[todayKey] || btn.disabled) {
         return;
       }
 
-      event.preventDefault();
-      
+      isLongPressing = true;
       pressStartTime = Date.now();
       btn.classList.add("vibrate");
+      
+      // 设备适配的反馈
+      if (isMobile && navigator.vibrate) {
+        navigator.vibrate(100);
+      }
       
       showToast("保持按住... 5秒后完成打卡", LONG_PRESS_TIME);
       
@@ -503,6 +716,8 @@
       let progress = 0;
       
       progressInterval = setInterval(() => {
+        if (!isLongPressing) return;
+        
         const elapsed = Date.now() - pressStartTime;
         progress = Math.min((elapsed / LONG_PRESS_TIME) * 100, 100);
         if (progressFill) {
@@ -519,15 +734,22 @@
       }, 50);
       
       pressTimer = setTimeout(() => {
-        completeCheckIn();
+        if (isLongPressing) {
+          completeCheckIn();
+          // 成功反馈
+          if (isMobile && navigator.vibrate) {
+            navigator.vibrate([100, 50, 100]);
+          }
+          btn.classList.remove("vibrate");
+          showToast(isDesktop ? "🎉 打卡成功！今天确认活着" : "✅ 打卡成功！今天确认活着", 3000);
+        }
         if (progressInterval) clearInterval(progressInterval);
-        btn.classList.remove("vibrate");
-        hideReminder(); // 打卡成功后隐藏提醒
-        showToast("✅ 打卡成功！今天确认活着", 3000);
       }, LONG_PRESS_TIME);
     }
 
     function cancelLongPress() {
+      isLongPressing = false;
+      
       if (pressTimer) {
         clearTimeout(pressTimer);
         pressTimer = null;
@@ -559,50 +781,38 @@
       render();
     }
 
-    // 事件监听
+    // 事件监听 - 双端兼容
     const checkInBtn = el("checkInBtn");
     
-    // 鼠标事件（桌面）
+    // 触摸设备优先使用触摸事件
+    if (isTouchDevice) {
+      checkInBtn.addEventListener("touchstart", (e) => {
+        startLongPress(e);
+        if (e.cancelable) e.preventDefault();
+      }, { passive: false });
+      
+      checkInBtn.addEventListener("touchend", cancelLongPress);
+      checkInBtn.addEventListener("touchcancel", cancelLongPress);
+      
+      // 防止触摸时页面滚动
+      document.addEventListener('touchmove', function(e) {
+        if (isLongPressing && e.target === checkInBtn) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
+    
+    // 桌面设备使用鼠标事件
     checkInBtn.addEventListener("mousedown", startLongPress);
     checkInBtn.addEventListener("mouseup", cancelLongPress);
     checkInBtn.addEventListener("mouseleave", cancelLongPress);
     
-    // 触摸事件（移动端）
-    checkInBtn.addEventListener("touchstart", (e) => {
-      startLongPress(e);
-      e.preventDefault();
-    });
-    checkInBtn.addEventListener("touchend", cancelLongPress);
-    checkInBtn.addEventListener("touchcancel", cancelLongPress);
-
     // 防止右键菜单
     checkInBtn.addEventListener("contextmenu", (e) => {
       e.preventDefault();
     });
 
-    // 提醒框按钮事件
-    el("reminderCheckBtn").addEventListener("click", () => {
-      hideReminder();
-      // 自动开始长按打卡
-      startLongPress({ preventDefault: () => {} });
-    });
-
-    el("reminderLaterBtn").addEventListener("click", () => {
-      hideReminder();
-      showToast("好的，稍后记得打卡哦", 2000);
-      // 设置30分钟后再提醒
-      setTimeout(() => {
-        checkReminder();
-      }, REMINDER_CHECK_INTERVAL);
-    });
-
-    // 点击遮罩层关闭提醒
-    el("reminderOverlay").addEventListener("click", () => {
-      hideReminder();
-      showToast("记得今天打卡确认活着哦", 2000);
-    });
-
-    // 其他事件
+    // 其他功能 - 双端兼容
     el("setStartBtn").addEventListener("click", () => {
       const data = ensureData();
       const v = el("startDate").value;
@@ -610,6 +820,7 @@
       data.startDate = v;
       save(data);
       render();
+      showToast("开始日已更新", 2000);
     });
 
     el("resetBtn").addEventListener("click", () => {
@@ -617,43 +828,118 @@
       if (!ok) return;
       localStorage.removeItem(KEY);
       render();
+      showToast("数据已清空", 2000);
     });
 
+    // 导出功能 - 双端适配
     el("exportBtn").addEventListener("click", async () => {
       const data = ensureData();
       const text = JSON.stringify(data, null, 2);
+      
+      // 手机优先使用分享API
+      if (isMobile && navigator.share) {
+        try {
+          const blob = new Blob([text], { type: "application/json" });
+          const file = new File([blob], "活着吗打卡记录.json", { type: "application/json" });
+          await navigator.share({
+            title: '活着吗打卡记录',
+            text: '这是我的每日打卡记录',
+            files: [file]
+          });
+          return;
+        } catch (err) {
+          console.log('分享失败，使用备用方案:', err);
+        }
+      }
+      
+      // 桌面端或分享失败的备选方案
       try {
         await navigator.clipboard.writeText(text);
-        showToast("已复制到剪贴板（JSON）", 2000);
+        showToast("📋 数据已复制到剪贴板", 2000);
       } catch {
+        // 下载文件
         const blob = new Blob([text], { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "活着吗-打卡记录.json";
+        a.download = `活着吗打卡记录-${yyyyMmDd(new Date())}.json`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(a.href);
+        showToast("📥 文件已下载", 2000);
       }
     });
 
+    // 导入功能 - 双端适配
     el("importBtn").addEventListener("click", () => {
-      const text = prompt("把导出的 JSON 粘贴到这里：");
-      if (!text) return;
-      try {
-        const obj = JSON.parse(text);
-        if (!obj.startDate || typeof obj.checkins !== "object") throw new Error("格式不对");
-        save(obj);
-        render();
-        showToast("导入成功！", 2000);
-      } catch (e) {
-        showToast("导入失败：JSON格式不正确", 2000);
+      if (isMobile) {
+        // 手机端使用文件输入
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json,application/json';
+        input.style.display = 'none';
+        document.body.appendChild(input);
+        
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) {
+            document.body.removeChild(input);
+            return;
+          }
+          
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const text = e.target.result;
+              const obj = JSON.parse(text);
+              if (!obj.startDate || typeof obj.checkins !== "object") {
+                throw new Error("格式不对");
+              }
+              save(obj);
+              render();
+              showToast("✅ 导入成功！", 2000);
+            } catch (e) {
+              showToast("❌ 导入失败：文件格式不正确", 2000);
+            }
+            document.body.removeChild(input);
+          };
+          reader.readAsText(file);
+        };
+        
+        input.click();
+      } else {
+        // 桌面端使用粘贴方式
+        const text = prompt("请粘贴导出的JSON数据：");
+        if (!text) return;
+        
+        try {
+          const obj = JSON.parse(text);
+          if (!obj.startDate || typeof obj.checkins !== "object") {
+            throw new Error("格式不对");
+          }
+          save(obj);
+          render();
+          showToast("✅ 导入成功！", 2000);
+        } catch (e) {
+          showToast("❌ 导入失败：JSON格式不正确", 2000);
+        }
       }
     });
 
     // 初始化
-    render();
-    initialReminderCheck();
-    
-    // 页面可见性变化时检查（用户切换回标签页时）
+    document.addEventListener('DOMContentLoaded', () => {
+      render();
+      setTimeout(checkReminder, 500);
+      
+      // 添加设备类名以便CSS适配
+      if (isMobile) {
+        document.body.classList.add('mobile');
+      } else {
+        document.body.classList.add('desktop');
+      }
+    });
+
+    // 页面可见时刷新
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         render();
@@ -661,8 +947,10 @@
       }
     });
     
-    // 每小时检查一次是否在提醒时间段
-    setInterval(checkReminder, 60 * 60 * 1000);
+    // 窗口大小变化时调整
+    window.addEventListener('resize', () => {
+      // 可以在这里添加响应式调整
+    });
   </script>
 </body>
 </html>
